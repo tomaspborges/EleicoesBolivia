@@ -1,0 +1,56 @@
+---
+title: "Eleições Bolívia"
+author: "Tomás Paixão Borges"
+date: "2023-09-05"
+output: html_document
+---
+# Pacotes
+
+```{r}
+# Pacotes
+library(dplyr)
+library(readr)
+library(stringr)
+```
+
+# Abrindo bases de dados
+
+```{r}
+votos_totais_eg2020 <- read.csv("votos_totales_eg2020.csv", sep = "|")
+opcion_voto_eg2020 <- read.csv("opcion_voto_eg2020.csv", sep = "|")
+candidatos_eg2020 <- read.csv("candidatos_eg2020.csv", sep = "|")
+```
+
+# Ajeitando colunas e primeira linha de candidatos_eg_2020
+
+```{r}
+# Ler o arquivo CSV com separador "|"
+linhas <- readLines("candidatos_eg2020.csv")
+
+# Extrair a primeira linha (ainda bugada) e encontrar id da palavra "GANADOR" na primeira linha
+primeira_linha <- linhas[1]
+pos_ganador <- str_locate (primeira_linha, "GANADOR")
+
+# Criar duas variáveis (uma com o que vem antes de GANADOR e outra com o que vem depois)
+nomes_colunas <- substring(primeira_linha, 1, pos_ganador[1, "end"])
+primeira_linha <- substring(primeira_linha, pos_ganador[1, "end"]+1, nchar(primeira_linha))
+  
+# Dividir os nomes de colunas e valores da primeira linha usando "|"
+nomes_colunas <- unlist(strsplit(nomes_colunas, "\\|"))
+primeira_linha <- unlist(strsplit(valores_ganador, "\\|"))
+  
+# Criar um novo dataframe com as colunas apropriadas
+candidatos_eg2020 <- data.frame(matrix(nrow = length(linhas), ncol = length(nomes_colunas)))
+colnames(candidatos_eg2020) <- nomes_colunas
+
+# Preencher as linhas com os valores das variáveis "linhas" (excluindo a primeira linha)
+for (i in 2:length(linhas)) {
+  linha <- linhas[i]
+  valores <- unlist(strsplit(linha, "\\|"))
+  candidatos_eg2020[i, ] <- valores
+}
+
+# Criar um novo dataframe com os valores de valores_ganador e unir com candidatos_eg2020
+candidatos_eg2020[1, ] <- primeira_linha
+```
+

@@ -36,8 +36,9 @@ nomes_colunas <- substring(primeira_linha, 1, pos_ganador[1, "end"])
 primeira_linha <- substring(primeira_linha, pos_ganador[1, "end"]+1, nchar(primeira_linha))
   
 # Dividir os nomes de colunas e valores da primeira linha usando "|"
-nomes_colunas <- unlist(strsplit(nomes_colunas, "\\|"))
-primeira_linha <- unlist(strsplit(valores_ganador, "\\|"))
+
+nomes_colunas <- strsplit(paste(nomes_colunas, collapse = ""), "|", fixed = TRUE)[[1]]
+primeira_linha <- strsplit(paste(primeira_linha, collapse = ""), "|", fixed = TRUE)[[1]]
   
 # Criar um novo dataframe com as colunas apropriadas
 candidatos_eg2020 <- data.frame(matrix(nrow = length(linhas), ncol = length(nomes_colunas)))
@@ -52,5 +53,17 @@ for (i in 2:length(linhas)) {
 
 # Criar um novo dataframe com os valores de valores_ganador e unir com candidatos_eg2020
 candidatos_eg2020[1, ] <- primeira_linha
+```
+
+```{r}
+library(tidyr)
+
+votos_totais_eg2020_long <- votos_totais_eg2020 %>%
+  pivot_longer(cols = c(ADN, CC, CREEMOS, FPV, JUNTOS, LIBRE.21, MAS.IPSP, PAN.BOL),
+               names_to = "partido",
+               values_to = "votos")
+
+# Agora você terá uma coluna "partido" com os nomes dos part
+
 ```
 
